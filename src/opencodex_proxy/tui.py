@@ -321,6 +321,24 @@ def fetch_models_from_provider(base_url: str, api_key: str) -> list[dict[str, An
         return []
 
 
+def create_custom_model(model_name: str, context_window: int | None = None) -> dict[str, Any]:
+    """Create a user-defined model entry that is retained across fetches."""
+    model = _full_format_model(model_name, _load_catalog_template(), context_window)
+    model["enabled"] = True
+    model["custom"] = True
+    return model
+
+
+def merge_fetched_models(existing: list[dict[str, Any]], fetched: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Replace discovered models while retaining custom IDs absent from the API."""
+    fetched_ids = {model_id(model) for model in fetched}
+    custom_models = [
+        model for model in existing
+        if model.get("custom") and model_id(model) not in fetched_ids
+    ]
+    return [*fetched, *custom_models]
+
+
 def test_connection(base_url: str, api_key: str) -> tuple[bool, str]:
     url = base_url.rstrip("/") + "/models"
     try:
@@ -591,6 +609,52 @@ class AddMappingScreen(ModalScreen[dict[str, str] | None]):
             tgt = self.query_one("#target-search", Input).value.strip()
             if cn and tgt:
                 self.dismiss({"codex_name": cn, "target": tgt})
+
+
+class AddCustomModelScreen(ModalScreen[dict[str, Any] | None]):
+    CSS = """
+    AddCustomModelScreen { align: center middle; }
+    #dlg { width: 64; height: auto; border: thick $primary; background: $surface; padding: 1 2; }
+    #dlg Input { width: 100%; margin: 0 0 1 0; }
+    #dlg Horizontal { width: 100%; height: auto; margin: 1 0 0 0; }
+    """
+
+    def __init__(self, provider_name: str) -> None:
+        super().__init__()
+        self.provider_name = provider_name
+
+    def compose(self) -> ComposeResult:
+        with Container(id="dlg"):
+            yield Static(f"[bold]Add Custom Model to {self.provider_name}[/bold]")
+            yield Label("Model ID (exact upstream model name):")
+            yield Input(placeholder="e.g. my-private-model", id="model-name")
+            yield Label("Context window (optional; default: 128000):")
+            yield Input(placeholder="e.g. 128000", id="context-window")
+            with Horizontal():
+                yield Button("Save", id="save", variant="success")
+                yield Button("Cancel", id="cancel", variant="error")
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "cancel":
+            self.dismiss(None)
+            return
+        if event.button.id != "save":
+            return
+
+        model_name = self.query_one("#model-name", Input).value.strip()
+        raw_context = self.query_one("#context-window", Input).value.strip()
+        if not model_name:
+            self.notify("Model ID is required", severity="error")
+            return
+        try:
+            context_window = int(raw_context) if raw_context else None
+        except ValueError:
+            self.notify("Context window must be a number", severity="error")
+            return
+        if context_window is not None and context_window <= 0:
+            self.notify("Context window must be positive", severity="error")
+            return
+        self.dismiss({"name": model_name, "context_window": context_window})
 
 
 class ConfirmScreen(ModalScreen[bool]):
@@ -1027,21 +1091,44 @@ class CodexProxyTUI(App):
             if not providers:
                 self.notify("No providers — add one first", severity="warning")
                 return
-            def on_pick(pname: str | None) -> None:
-                if not pname:
-                    return
-                pdata = self.config["providers"].get(pname, {})
-                self.notify("Fetching models...", severity="info")
-                models = fetch_models_from_provider(pdata.get("baseUrl", ""), pdata.get("apiKey", ""))
-                if models:
-                    pdata["models"] = models
-                    save_config(self.config)
-                    self._refresh_counts()
-                    self.notify(f"Fetched {len(models)} models", severity="success")
-                    self._show_view("models")
-                else:
-                    self.notify("Failed to fetch models", severity="error")
-            self.push_screen(PickScreen("Select Provider to Fetch From", providers), on_pick)
+            def on_action(action: str | None) -> None:
+                if action == "Fetch models from provider":
+                    def on_pick(pname: str | None) -> None:
+                        if not pname:
+                            return
+                        pdata = self.config["providers"].get(pname, {})
+                        self.notify("Fetching models...", severity="info")
+                        models = fetch_models_from_provider(pdata.get("baseUrl", ""), pdata.get("apiKey", ""))
+                        if models:
+                            pdata["models"] = merge_fetched_models(pdata.get("models", []), models)
+                            save_config(self.config)
+                            self._refresh_counts()
+                            self.notify(f"Fetched {len(models)} models", severity="success")
+                            self._show_view("models")
+                        else:
+                            self.notify("Failed to fetch models", severity="error")
+                    self.push_screen(PickScreen("Select Provider to Fetch From", providers), on_pick)
+                elif action == "Add custom model":
+                    def on_pick(pname: str | None) -> None:
+                        if not pname:
+                            return
+                        def on_result(result: dict[str, Any] | None) -> None:
+                            if not result:
+                                return
+                            pdata = self.config["providers"][pname]
+                            models = pdata.setdefault("models", [])
+                            name = result["name"]
+                            if any(model_id(model) == name for model in models):
+                                self.notify(f"Model '{name}' already exists", severity="warning")
+                                return
+                            models.append(create_custom_model(name, result["context_window"]))
+                            save_config(self.config)
+                            self._refresh_counts()
+                            self.notify(f"Custom model '{name}' added", severity="success")
+                            self._show_view("models")
+                        self.push_screen(AddCustomModelScreen(pname), on_result)
+                    self.push_screen(PickScreen("Select Provider for Custom Model", providers), on_pick)
+            self.push_screen(PickScreen("Add Model", ["Fetch models from provider", "Add custom model"]), on_action)
 
         elif self.current_view == "mappings":
             available = self._get_available_models()

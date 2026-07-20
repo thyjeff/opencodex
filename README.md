@@ -60,6 +60,20 @@ uv run --group build pyinstaller --noconfirm --clean --onefile --console --name 
 
 The result is `dist\opencodex.exe`.
 
+### Custom models
+
+In the standalone manager, open **Models**, click **Add**, then choose **Add
+custom model**. Select the provider, enter the exact upstream model ID, and
+optionally set its context window. Custom models remain available after you
+fetch the provider's discovered model list again.
+
+### Updating the executable
+
+Close OpenCodeX, download the newest `opencodex.exe` from its release, and
+replace the old file with the downloaded file. Your provider and model settings
+are stored in your user configuration directory, so replacing the executable
+does not remove them.
+
 ### One-shot install (uvx)
 
 ```bash
