@@ -39,3 +39,4 @@ module-root = "src"
 
 [dependency-groups]
 dev = ["pytest>=8"]
+build = ["pyinstaller>=6.0"]

@@ -23,7 +23,11 @@ import time
 from pathlib import Path
 from typing import Any
 
-PROXY_DIR = Path(__file__).parent
+# A PyInstaller one-file executable extracts its bundled files to a temporary
+# directory. Runtime files must instead live beside the executable so they
+# remain available to the proxy process after startup.
+FROZEN = bool(getattr(sys, "frozen", False))
+PROXY_DIR = Path(sys.executable).parent if FROZEN else Path(__file__).parent
 SRC_DIR = PROXY_DIR / "src"
 if SRC_DIR.exists() and str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
@@ -395,16 +399,19 @@ def cmd_start(args: list[str]) -> None:
         env["OPENCODE_GO_API_KEY"] = api_key
 
     # Make the opencodex_proxy package importable when launched as a module,
-    # regardless of whether the project is pip/uv-installed.
+    # regardless of whether the project is pip/uv-installed. A frozen build
+    # relaunches this executable in an internal proxy-server mode instead.
     env = dict(env)
-    existing_pp = env.get("PYTHONPATH", "")
-    parts = [str(SRC_DIR)] + ([existing_pp] if existing_pp else [])
-    env["PYTHONPATH"] = os.pathsep.join(parts)
+    if not FROZEN:
+        existing_pp = env.get("PYTHONPATH", "")
+        parts = [str(SRC_DIR)] + ([existing_pp] if existing_pp else [])
+        env["PYTHONPATH"] = os.pathsep.join(parts)
 
     add_provider_to_config()
 
-    cmd = [
+    cmd = ([sys.executable, "--proxy-server"] if FROZEN else [
         sys.executable, "-m", "opencodex_proxy",
+    ]) + [
         "--bind", "127.0.0.1",
         "--port", "8787",
         "--chat-base-url", base_url,
@@ -540,7 +547,14 @@ COMMANDS = {
 
 
 def main() -> None:
-    if len(sys.argv) < 2:
+    # Internal entry point used by the standalone Windows executable to start
+    # its background proxy without requiring a separate Python installation.
+    if len(sys.argv) > 1 and sys.argv[1] == "--proxy-server":
+        from opencodex_proxy.app import main as proxy_main
+        proxy_main(sys.argv[2:])
+        return
+
+    if len(sys.argv) < 2 or sys.argv[1] in {"-h", "--help", "help"}:
         print(f"{ANSI_BOLD}opencodex - OpenCodeX Proxy CLI{ANSI_RESET}")
         print()
         print("Commands:")
@@ -549,6 +563,11 @@ def main() -> None:
         print()
         print(f"  {ANSI_DIM}Usage: opencodex <command> [args]{ANSI_RESET}")
         print(f"  {ANSI_DIM}       opencodex tui        Launch interactive TUI{ANSI_RESET}")
+        return
+
+    if sys.argv[1] in {"-v", "--version", "version"}:
+        from opencodex_proxy import __version__
+        print(f"opencodex {__version__}")
         return
 
     cmd = sys.argv[1]

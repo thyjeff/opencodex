@@ -34,6 +34,29 @@ OpenCodeX  ────── 13 models: DeepSeek, GLM, Kimi, MiMo, MiniMax, Qwe
 
 ## Quick start
 
+### Windows standalone executable (no Python required)
+
+Download `opencodex.exe` from the latest GitHub release, place it in a folder
+you can write to, then run it from PowerShell or Command Prompt:
+
+```powershell
+.\opencodex.exe tui
+.\opencodex.exe start
+```
+
+The executable bundles Python and its dependencies. You only need Codex desktop
+and your provider credentials; you do not need to install Python, `uv`, or any
+other runtime.
+
+Maintainers can build the executable locally with:
+
+```powershell
+uv sync --group build
+uv run --group build pyinstaller --noconfirm --clean --onefile --console --name opencodex --paths src --collect-all textual --hidden-import opencodex_proxy.app --hidden-import opencodex_proxy.protocol --hidden-import opencodex_proxy.tui opencodex.py
+```
+
+The result is `dist\opencodex.exe`.
+
 ### One-shot install (uvx)
 
 ```bash

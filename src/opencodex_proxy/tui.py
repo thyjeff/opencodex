@@ -47,7 +47,8 @@ CONFIG_DIR = Path.home() / ".config" / "opencodex-proxy"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 CODEX_CONFIG = Path.home() / ".codex" / "config.toml"
 CODEX_BACKUP_DIR = Path.home() / ".codex" / "backups"
-PROXY_DIR = Path(__file__).parent.parent.parent
+FROZEN = bool(getattr(sys, "frozen", False))
+PROXY_DIR = Path(sys.executable).parent if FROZEN else Path(__file__).parent.parent.parent
 PID_FILE = PROXY_DIR / "proxy.pid"
 LOG_FILE = PROXY_DIR / "proxy.log"
 MODEL_CATALOG_DIR = Path.home() / ".codex" / "model-catalogs"
@@ -125,8 +126,9 @@ def start_proxy() -> tuple[bool, str]:
     env = os.environ.copy()
     env["OPENCODE_GO_API_KEY"] = api_key
 
-    cmd = [
+    cmd = ([sys.executable, "--proxy-server"] if FROZEN else [
         sys.executable, "-m", "opencodex_proxy",
+    ]) + [
         "--bind", "127.0.0.1", "--port", "8787",
         "--chat-base-url", base_url,
     ]
