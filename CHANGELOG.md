@@ -1,0 +1,83 @@
+# Changelog
+
+## [Unreleased]
+
+## [0.1.3] - 2026-07-07
+
+Interactive TUI + CLI improvements.
+
+### Added
+
+- Interactive TUI (`opencodex tui`) with 7 screens: Dashboard, Providers, Models, Mappings, Codex, Logs, Settings
+- Provider management: add/edit/delete/test connections, auto-fetch models
+- Model browser: toggle ON/OFF, expand/collapse provider groups, search
+- Model mapping editor: map Codex model names to provider targets
+- Codex integration screen: backup/restore config, restart app, update model catalog
+- Real-time log viewer for proxy diagnostics
+- Keyboard shortcuts: Ctrl+S (start), Ctrl+E (stop), F5 (refresh), Esc (back)
+- `opencodex tui` CLI command as alias for TUI launch
+- Optional `tui` extra dependency (`textual>=0.40`)
+
+### Fixed
+
+- Reference catalog `contrib/opencodex-catalog.json` now ships with the `ModelsCache` wrapper
+  (`fetched_at`/`etag`/`client_version`/`models`). Codex 0.142+ desktop app requires all four
+  top-level fields — the previous bare `{"models": [...]}` caused the model picker to fall back
+  to "Custom" instead of showing the full list. The CLI tolerated the bare format, so this only
+  surfaced in the desktop app.
+
+## [0.1.2] - 2026-06-21
+
+Bug fixes + removed AUR packaging.
+
+### Fixed
+
+- `call_upstream_chat` now catches `json.JSONDecodeError` — invalid JSON from upstream returns 502 instead of crashing
+- Streaming crash: if `handle_streaming_request` raised after SSE headers sent, sends `response.error` SSE event instead of corrupted HTTP response
+- Streaming + missing API key: `resolve_api_key` moved before `response.created` so error event reaches client
+- README launchd path: `~/Library/.codex/logs` → `~/.codex/logs` (matches plist)
+- LICENSE copyright year 2025 → 2026
+
+### Removed
+
+- AUR package (`aur/opencodex-proxy-git/`) — not launching on AUR
+- PyPI — not launching on PyPI; `uvx --from git+...` is the install path
+
+## [0.1.1] - 2026-06-21
+
+Graceful shutdown + launchd service file.
+
+### Added
+
+- SIGTERM handler for graceful shutdown on `launchctl bootout` / `systemctl stop`
+- launchd plist at `contrib/launchd/com.opencodex.proxy.plist`
+- README: launchd setup instructions with copy + bootstrap commands
+
+## [0.1.0] - 2026-06-21
+
+Initial public release.
+
+### Added
+
+- Responses `input` to chat `messages` translation
+- `instructions` and `developer` roles mapped to system messages
+- Function tool schema passthrough
+- Custom/freeform tool adaptation (Codex `apply_patch` works)
+- `reasoning_content` replay across tool-call turns
+- Real-time SSE streaming
+- Image captioning via MiMo V2.5 when tools are present
+- SSRF protection on image URLs (`data:image/` and `https://` only)
+- Configurable body cap, bind address guard
+- macOS keychain credential resolution
+- Local health and model-list endpoints
+- Reference model catalog with all 13 OpenCodeX models
+- systemd user service at `contrib/systemd/`
+- 41 tests (unit + integration) covering protocol, credentials, HTTP round-trip, alias map, tool calls, streaming tool calls, streaming error handling, streaming crash recovery, invalid upstream JSON, SSRF, and image captioning
+
+### Security
+
+- SSRF validation on image URLs
+- Non-negative Content-Length validation
+- Generic error messages to client (full bodies only in trace logs)
+- No path reflection in 404 responses
+- Bind address guard warns on non-localhost

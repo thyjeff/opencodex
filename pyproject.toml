@@ -1,0 +1,41 @@
+[project]
+name = "opencodex"
+version = "0.2.0"
+description = "OpenCodeX — local Responses-to-Chat-Completions bridge for Codex with TUI manager"
+readme = "README.md"
+authors = [{ name = "thyjeff" }]
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = ["textual>=0.40"]
+keywords = ["codex", "opencodex", "responses-api", "chat-completions", "agent", "proxy", "tui"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://github.com/thyjeff/opencodex"
+Repository = "https://github.com/thyjeff/opencodex"
+Issues = "https://github.com/thyjeff/opencodex/issues"
+
+[project.scripts]
+opencodex = "opencodex_proxy.cli:main"
+opencodex-start = "opencodex_proxy.cli:start"
+opencodex-stop = "opencodex_proxy.cli:stop"
+opencodex-tui = "opencodex_proxy.cli:tui"
+
+[build-system]
+requires = ["uv_build>=0.10.9,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "opencodex_proxy"
+module-root = "src"
+
+[dependency-groups]
+dev = ["pytest>=8"]

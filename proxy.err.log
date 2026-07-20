@@ -1,0 +1,1 @@
+{"api_key_env": "OPENCODE_GO_API_KEY", "bind": "127.0.0.1", "chat_base_url": "https://opencode.ai/zen/go/v1", "event": "server.start", "port": 8787, "ts": 1783429906.2394862}

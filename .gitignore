@@ -1,0 +1,12 @@
+# Runtime artifacts
+proxy.pid
+proxy.log
+*.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+dist/
+build/
+*.egg-info/

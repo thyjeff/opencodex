@@ -1,0 +1,218 @@
+model_reasoning_effort = "medium"
+service_tier = "flex"
+
+notify = [ "C:\\Users\\JeFF\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\1b23c930bdf84ed6\\bin\\node_modules\\@oai\\sky\\bin\\windows\\codex-computer-use.exe", "turn-ended" ]
+
+[marketplaces.openai-bundled]
+last_updated = "2026-07-07T12:10:28Z"
+source_type = "local"
+source = '\\?\C:\Users\JeFF\.codex\.tmp\bundled-marketplaces\openai-bundled'
+
+[marketplaces.openai-primary-runtime]
+last_updated = "2026-07-05T09:33:46Z"
+source_type = "local"
+source = '\\?\C:\Users\JeFF\.cache\codex-runtimes\codex-primary-runtime\plugins\openai-primary-runtime'
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."github@openai-curated"]
+enabled = true
+
+[plugins."teams@openai-curated"]
+enabled = true
+
+[plugins."slack@openai-curated"]
+enabled = true
+
+[plugins."vercel@openai-curated"]
+enabled = true
+
+[plugins."codex-security@openai-curated"]
+enabled = true
+
+[plugins."canva@openai-curated"]
+enabled = true
+
+[plugins."notion@openai-curated"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."linear@openai-curated"]
+enabled = true
+
+[plugins."nvidia@openai-curated"]
+enabled = true
+
+[plugins."pdf@openai-primary-runtime"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[plugins."chrome@openai-bundled"]
+enabled = true
+
+[plugins."template-creator@openai-primary-runtime"]
+enabled = true
+
+[projects.'c:\users\jeff\documents\new project 2']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\codex\2026-04-26\files-mentioned-by-the-user-rollout']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\codex\2026-04-28\c-users-jeff-downloads-new-folder']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\codex\2026-04-30\prj-h5qol6ml8dipc28id7kzevpmm2hb-fix-the-problem-in']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\codex\2026-05-15\hi']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\codex\2026-05-19\fix-this']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\codex\2026-05-30\hi']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\codex\2026-06-08\he-firecrawl-problem-the-parameter-gap']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\codex\2026-06-08\c-users-jeff-local-bin']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\codex\2026-06-08\my-c-drive-getting-fullied-up']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\codex\2026-06-09\iam-getting-this-error-msg-in']
+trust_level = "trusted"
+
+[projects.'e:\bash']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\codex\2026-06-10\hey-i-have-claude-3-app']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\codex\2026-06-12\files-mentioned-by-the-user-detection']
+trust_level = "trusted"
+
+[projects.'e:\']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\codex\2026-06-26\s-e-bash-ai-omniroute-npm']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\sync']
+trust_level = "trusted"
+
+[projects.'c:\users\jeff\documents\codex\2026-07-04\hi']
+trust_level = "trusted"
+
+[projects.'e:\bash\ai\opencodex-proxy-new']
+trust_level = "trusted"
+
+[projects.'e:\bash\codex\opencodex-proxy-main']
+trust_level = "trusted"
+
+[mcp_servers.composis]
+bearer_token_env_var = "ck_2WxDpOUZiSj5LuxNifA8"
+enabled = true
+url = "https://connect.composio.dev/mcp"
+
+[mcp_servers.node_repl]
+args = []
+command = 'C:\Users\JeFF\AppData\Local\OpenAI\Codex\runtimes\cua_node\1b23c930bdf84ed6\bin\node_repl.exe'
+startup_timeout_sec = 120
+
+[mcp_servers.node_repl.env]
+NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+NODE_REPL_NODE_MODULE_DIRS = 'C:\Users\JeFF\AppData\Local\OpenAI\Codex\runtimes\cua_node\1b23c930bdf84ed6\bin\node_modules'
+NODE_REPL_NODE_PATH = 'C:\Users\JeFF\AppData\Local\OpenAI\Codex\runtimes\cua_node\1b23c930bdf84ed6\bin\node.exe'
+NODE_REPL_TRUSTED_CODE_PATHS = 'C:\Users\JeFF\.codex'
+CODEX_HOME = 'C:\Users\JeFF\.codex'
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "566be6ef352eb3de899adc56a9cd7b5e46c8f65b00e56b5630dd7a580e10cbea,60e4902788f207f88fd09344dfeafe07769488bdb2924bbb12b322c3b9d2b999"
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
+NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
+BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
+BROWSER_USE_CODEX_APP_VERSION = "26.623.101652"
+SKY_CUA_NATIVE_PIPE = "1"
+SKY_CUA_NATIVE_PIPE_DIRECTORY = '\\.\pipe\codex-computer-use-bb9a2e8d-1cfe-4d6e-875d-8c3771910c91'
+CODEX_CLI_PATH = 'C:\Users\JeFF\AppData\Local\OpenAI\Codex\bin\ea1c60319a1dcb19\codex.exe'
+
+[desktop]
+ambient-suggestions-enabled = true
+appearanceTheme = "light"
+appearanceLightCodeThemeId = "catppuccin"
+appearanceDarkCodeThemeId = "ayu"
+usePointerCursors = false
+reduced-motion-preference = "system"
+conversationDetailMode = "STEPS_COMMANDS"
+appearanceDiffMarkerStyle = "color"
+selected-avatar-id = "seedy"
+keepRemoteControlAwakeWhilePluggedIn = true
+followUpQueueMode = "queue"
+
+[desktop.appearanceLightChromeTheme]
+accent = "#8839ef"
+contrast = 64
+ink = "#4c4f69"
+opaqueWindows = false
+surface = "#eff1f5"
+
+[desktop.appearanceLightChromeTheme.fonts]
+code = '"Jetbrains Mono"'
+ui = "Inter"
+
+[desktop.appearanceLightChromeTheme.semanticColors]
+diffAdded = "#40a02b"
+diffRemoved = "#d20f39"
+skill = "#8839ef"
+
+[desktop.appearanceDarkChromeTheme]
+accent = "#e6b450"
+contrast = 87
+ink = "#bfbdb6"
+opaqueWindows = false
+surface = "#0b0e14"
+
+[desktop.appearanceDarkChromeTheme.fonts]
+code = '"Jetbrains Mono"'
+ui = "Inter"
+
+[desktop.appearanceDarkChromeTheme.semanticColors]
+diffAdded = "#7fd962"
+diffRemoved = "#ea6c73"
+skill = "#cda1fa"
+
+[desktop.open-in-target-preferences]
+global = "fileManager"
+
+[desktop.open-in-target-preferences.perPath]
+'C:\Users\JeFF\Documents\New project 2' = "fileManager"
+
+[features]
+js_repl = false
+multi_agent = true
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+
+[windows]
+sandbox = "elevated"
+
+[notice.model_migrations]
+"gpt-5.3-codex" = "gpt-5.4"
