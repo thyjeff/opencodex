@@ -37,7 +37,10 @@ OpenCodeX  ────── 13 models: DeepSeek, GLM, Kimi, MiMo, MiniMax, Qwe
 ### Windows standalone executable (no Python required)
 
 Download `opencodex.exe` from the latest GitHub release, place it in a folder
-you can write to, then run it from PowerShell or Command Prompt:
+you can write to, then double-click it to open the interactive manager. The
+manager includes controls for starting and stopping the proxy, managing
+providers and models, editing configuration, viewing logs, and restarting
+Codex. You can also run it from PowerShell or Command Prompt:
 
 ```powershell
 .\opencodex.exe tui

@@ -554,7 +554,13 @@ def main() -> None:
         proxy_main(sys.argv[2:])
         return
 
-    if len(sys.argv) < 2 or sys.argv[1] in {"-h", "--help", "help"}:
+    if len(sys.argv) < 2:
+        # The standalone executable is intended to be double-clicked as well
+        # as run from a terminal. Open the full manager in either case.
+        cmd_tui([])
+        return
+
+    if sys.argv[1] in {"-h", "--help", "help"}:
         print(f"{ANSI_BOLD}opencodex - OpenCodeX Proxy CLI{ANSI_RESET}")
         print()
         print("Commands:")
