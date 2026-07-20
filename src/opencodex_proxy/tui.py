@@ -49,10 +49,12 @@ CODEX_CONFIG = Path.home() / ".codex" / "config.toml"
 CODEX_BACKUP_DIR = Path.home() / ".codex" / "backups"
 FROZEN = bool(getattr(sys, "frozen", False))
 PROXY_DIR = Path(sys.executable).parent if FROZEN else Path(__file__).parent.parent.parent
+BUNDLED_DIR = Path(getattr(sys, "_MEIPASS", PROXY_DIR))
 PID_FILE = PROXY_DIR / "proxy.pid"
 LOG_FILE = PROXY_DIR / "proxy.log"
 MODEL_CATALOG_DIR = Path.home() / ".codex" / "model-catalogs"
 MODEL_CATALOG_FILE = MODEL_CATALOG_DIR / "opencodex.json"
+MODEL_CATALOG_JSON_LINE = 'model_catalog_json = "~/.codex/model-catalogs/opencodex.json"'
 PROXY_URL = "http://127.0.0.1:8787"
 
 DEFAULT_CONFIG: dict[str, Any] = {
@@ -202,7 +204,7 @@ def add_provider_to_codex() -> tuple[bool, str]:
     if not CODEX_CONFIG.exists():
         return False, "No config.toml found"
     content = CODEX_CONFIG.read_text(encoding="utf-8")
-    if "[model_providers.opencodex]" in content:
+    if "[model_providers.opencodex]" in content and MODEL_CATALOG_JSON_LINE in content:
         return True, "Already present"
     backup_codex_config()
     provider_block = (
@@ -218,9 +220,13 @@ def add_provider_to_codex() -> tuple[bool, str]:
         if line.startswith("[marketplaces."):
             insert_idx = i
             break
-    for pline in provider_block.strip().split("\n"):
-        lines.insert(insert_idx, pline)
+    if MODEL_CATALOG_JSON_LINE not in content:
+        lines.insert(insert_idx, MODEL_CATALOG_JSON_LINE)
         insert_idx += 1
+    if "[model_providers.opencodex]" not in content:
+        for pline in provider_block.strip().split("\n"):
+            lines.insert(insert_idx, pline)
+            insert_idx += 1
     CODEX_CONFIG.write_text("\n".join(lines), encoding="utf-8")
     return True, "Provider added to config.toml"
 
@@ -248,7 +254,7 @@ def remove_provider_from_codex() -> tuple[bool, str]:
 
 def _load_catalog_template() -> dict[str, Any] | None:
     """Load the bundled full-format reference catalog as a template."""
-    template_path = PROXY_DIR / "contrib" / "opencodex-catalog.json"
+    template_path = BUNDLED_DIR / "contrib" / "opencodex-catalog.json"
     if not template_path.exists():
         return None
     try:
@@ -378,7 +384,7 @@ def update_model_catalog() -> tuple[bool, str]:
     MODEL_CATALOG_DIR.mkdir(parents=True, exist_ok=True)
 
     # Seed template from bundled full-format reference catalog.
-    template_path = PROXY_DIR / "contrib" / "opencodex-catalog.json"
+    template_path = BUNDLED_DIR / "contrib" / "opencodex-catalog.json"
     template_models: dict[str, dict] = {}
     base_template: dict[str, Any] | None = None
     if template_path.exists():
@@ -959,6 +965,16 @@ class CodexProxyTUI(App):
     def action_start_proxy(self) -> None:
         self.notify("Starting proxy...", severity="info")
         ok, msg = start_proxy()
+        if ok:
+            add_provider_to_codex()
+            catalog_ok, catalog_msg = update_model_catalog()
+            restart_ok, restart_msg = restart_codex()
+            if catalog_ok and restart_ok:
+                msg = f"{msg}; {catalog_msg}; {restart_msg}"
+            elif not catalog_ok:
+                msg = f"{msg}; catalog update failed: {catalog_msg}"
+            else:
+                msg = f"{msg}; {restart_msg}"
         self.notify(msg, severity="success" if ok else "error")
         self.config = load_config()
         self._refresh_counts()

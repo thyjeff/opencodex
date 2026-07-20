@@ -28,6 +28,9 @@ from typing import Any
 # remain available to the proxy process after startup.
 FROZEN = bool(getattr(sys, "frozen", False))
 PROXY_DIR = Path(sys.executable).parent if FROZEN else Path(__file__).parent
+# PyInstaller extracts bundled read-only resources here; runtime files still
+# live beside the executable in PROXY_DIR.
+BUNDLED_DIR = Path(getattr(sys, "_MEIPASS", PROXY_DIR))
 SRC_DIR = PROXY_DIR / "src"
 if SRC_DIR.exists() and str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
@@ -259,7 +262,7 @@ def update_model_catalog() -> None:
     MODEL_CATALOG_DIR.mkdir(parents=True, exist_ok=True)
 
     # Seed template: the bundled full-format reference catalog.
-    template_path = PROXY_DIR / "contrib" / "opencodex-catalog.json"
+    template_path = BUNDLED_DIR / "contrib" / "opencodex-catalog.json"
     template_models: dict[str, dict] = {}
     base_template: dict | None = None
     if template_path.exists():

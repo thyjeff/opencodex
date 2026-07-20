@@ -55,7 +55,7 @@ Maintainers can build the executable locally with:
 
 ```powershell
 uv sync --group build
-uv run --group build pyinstaller --noconfirm --clean --onefile --console --name opencodex --paths src --collect-all textual --hidden-import opencodex_proxy.app --hidden-import opencodex_proxy.protocol --hidden-import opencodex_proxy.tui opencodex.py
+uv run --group build pyinstaller --noconfirm --clean --onefile --console --name opencodex --paths src --add-data "contrib/opencodex-catalog.json;contrib" --collect-all textual --hidden-import opencodex_proxy.app --hidden-import opencodex_proxy.protocol --hidden-import opencodex_proxy.tui opencodex.py
 ```
 
 The result is `dist\opencodex.exe`.
