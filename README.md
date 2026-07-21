@@ -34,13 +34,23 @@ Any OpenAI-compatible provider → fetched and custom models
 
 ## Windows EXE
 
-### Download and use
-
-1. [Download `opencodex.exe`](https://github.com/thyjeff/opencodex/releases/latest/download/opencodex.exe).
-2. Save it in a folder you can write to, such as `C:\Tools\OpenCodeX`.
-3. Double-click it to open the manager, or run it from PowerShell.
+### Download, configure, and start
 
 No Python, `uv`, or other runtime is required.
+
+1. [Download `opencodex.exe`](https://github.com/thyjeff/opencodex/releases/latest/download/opencodex.exe) and save it in a folder you can write to, such as `C:\Tools\OpenCodeX`.
+2. Double-click the executable to open the manager.
+3. Open **Providers** and add your provider's base URL and API key. Use **Test** to confirm the connection.
+4. Open **Models**, choose **Add**, then select **Fetch models from provider**. Select the models you want to use.
+5. If fetching does not work, choose **Add custom model** instead. Enter the provider's model ID *exactly* as the provider documents it or returns it from `/v1/models`.
+6. Open **Mappings** and map the Codex-facing name to the exact provider model. For example, if the provider's model ID is `gpt-5-mini`, map a Codex name such as `gpt-5.5` to `My Provider:gpt-5-mini`.
+7. Press `Ctrl+S` in the manager to start the proxy and apply the Codex integration.
+
+> **Important — model mapping must be exact.** A single typo, extra space, or incorrect model ID in a mapping can cause Codex to show a **sandbox error**. The part after `Provider:` must exactly match a model ID that your provider supports. For example, use `My Provider:gpt-5-mini` only if the provider lists `gpt-5-mini`; do not guess an ID such as `gpt 5 mini` or `gpt-5 mini`.
+
+After changing providers, models, or mappings, quit the Codex desktop app completely from the Windows taskbar system tray, then open Codex again. Leaving it running can keep the old configuration and make it look as if the changes did not apply.
+
+To stop the proxy and restore your original Codex configuration, press `Ctrl+E` in the manager or run `opencodex stop` in a terminal.
 
 To use the normal `opencodex` commands from any folder, run this once in the folder containing the executable:
 
@@ -60,7 +70,7 @@ opencodex models          # List models from the local proxy
 opencodex config          # Open the configuration manager
 ```
 
-Inside the TUI, use `Ctrl+S` to start and integrate with Codex, `Ctrl+E` to stop, `F5` to refresh, and `Q` to quit.
+Inside the TUI, use `Ctrl+S` to start and integrate with Codex, `Ctrl+E` to stop and restore the original Codex configuration, `F5` to refresh, and `Q` to quit.
 
 Maintainers can build the executable locally with:
 
@@ -70,13 +80,6 @@ uv run --group build pyinstaller --noconfirm --clean --onefile --console --name 
 ```
 
 The result is `dist\opencodex.exe`.
-
-### Custom models
-
-In the standalone manager, open **Models**, click **Add**, then choose **Add
-custom model**. Select the provider, enter the exact upstream model ID, and
-optionally set its context window. Custom models remain available after you
-fetch the provider's discovered model list again.
 
 ### Updating the executable
 
@@ -89,10 +92,12 @@ does not remove them.
 
 If Codex shows a sandbox error after starting the proxy:
 
-1. Confirm you use a real OpenAI-compatible provider URL and a valid API key, then use **Test** and **Fetch models** in the TUI.
-2. Run `opencodex status` and `opencodex models`; the proxy must be running and list models before opening Codex.
-3. Run `opencodex stop`, then `opencodex start` to restore and reapply the Codex configuration.
-4. Check `proxy.log` next to `opencodex.exe`. Do not share API keys if you request support.
+1. **Check every mapping first.** The model ID after `Provider:` must be an exact match—copy it from **Fetch models**, your provider documentation, or `/v1/models`. A wrong ID is a common sandbox-error cause.
+2. Confirm you use a real OpenAI-compatible provider URL and a valid API key, then use **Test** in the TUI.
+3. Run `opencodex status` and `opencodex models`; the proxy must be running and list the target models before opening Codex.
+4. Press `Ctrl+E` (or run `opencodex stop`), then press `Ctrl+S` (or run `opencodex start`) to restore and reapply the Codex configuration.
+5. Quit Codex completely from the Windows taskbar system tray, then reopen it so it reads the new configuration.
+6. Check `proxy.log` next to `opencodex.exe`. Do not share API keys if you request support.
 
 ## Python and uv options
 
