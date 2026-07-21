@@ -23,14 +23,19 @@ Any OpenAI-compatible provider → fetched and custom models
 
 ## Screenshots
 
-**Codex desktop with OpenCodeX proxy model selected:**
-![Codex desktop chat](docs/images/codex-desktop-chat.jpg)
+**Desktop — select your OpenCodeX proxy model directly in Codex.**
 
-**Codex mobile app with OpenCodeX proxy mode:**
-![Codex mobile model picker](docs/images/codex-mobile-model-picker.png)
+<img src="docs/images/codex-desktop-chat.jpg" alt="Codex desktop with OpenCodeX proxy model selected" width="300" />
 
-**OpenCodeX TUI manager:**
-![OpenCodeX TUI](docs/images/tui.jpg)
+**Mobile — use the same proxy setup from the Codex mobile app.**
+
+<img src="docs/images/codex-mobile-model-picker.png" alt="Codex mobile app with OpenCodeX proxy mode" width="300" />
+
+**TUI manager — add providers, fetch or add custom models, and create exact mappings.**
+
+<img src="docs/images/tui.jpg" alt="OpenCodeX TUI manager" width="300" />
+
+> **Highlights:** no Python required for the Windows EXE; add any OpenAI-compatible provider and models; use exact model mappings; start with `Ctrl+S` and restore your original Codex configuration with `Ctrl+E`.
 
 ## Windows EXE
 
