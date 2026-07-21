@@ -1,7 +1,7 @@
 # OpenCodeX Proxy
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Windows standalone](https://img.shields.io/badge/Windows-standalone%20EXE-blue.svg)](https://github.com/thyjeff/opencodex/releases)
 
 Use your [OpenCodeX](https://opencode.ai/docs/go) subscription in the [Codex app](https://github.com/openai/codex).
 Plus a full TUI manager for providers, models, mappings, and Codex config.
@@ -18,7 +18,7 @@ opencodex  ←── localhost:8787, stdlib only
     │
     │  POST /v1/chat/completions (Chat Completions API)
     ▼
-OpenCodeX  ────── 13 models: DeepSeek, GLM, Kimi, MiMo, MiniMax, Qwen
+Any OpenAI-compatible provider → fetched and custom models
 ```
 
 ## Screenshots
@@ -32,24 +32,35 @@ OpenCodeX  ────── 13 models: DeepSeek, GLM, Kimi, MiMo, MiniMax, Qwe
 **OpenCodeX TUI manager:**
 ![OpenCodeX TUI](docs/images/tui.jpg)
 
-## Quick start
+## Windows EXE
 
-### Windows standalone executable (no Python required)
+### Download and use
 
-Download `opencodex.exe` from the latest GitHub release, place it in a folder
-you can write to, then double-click it to open the interactive manager. The
-manager includes controls for starting and stopping the proxy, managing
-providers and models, editing configuration, viewing logs, and restarting
-Codex. You can also run it from PowerShell or Command Prompt:
+1. [Download `opencodex.exe`](https://github.com/thyjeff/opencodex/releases/latest/download/opencodex.exe).
+2. Save it in a folder you can write to, such as `C:\Tools\OpenCodeX`.
+3. Double-click it to open the manager, or run it from PowerShell.
+
+No Python, `uv`, or other runtime is required.
+
+To use the normal `opencodex` commands from any folder, run this once in the folder containing the executable:
 
 ```powershell
-.\opencodex.exe tui
-.\opencodex.exe start
+.\opencodex.exe install
 ```
 
-The executable bundles Python and its dependencies. You only need Codex desktop
-and your provider credentials; you do not need to install Python, `uv`, or any
-other runtime.
+Close and reopen PowerShell or Command Prompt. Then these work globally:
+
+```powershell
+opencodex                 # Open the TUI manager
+opencodex start           # Start proxy, update Codex, restart Codex
+opencodex stop            # Stop proxy and restore Codex config
+opencodex restart         # Restart proxy and Codex integration
+opencodex status          # Show proxy and Codex status
+opencodex models          # List models from the local proxy
+opencodex config          # Open the configuration manager
+```
+
+Inside the TUI, use `Ctrl+S` to start and integrate with Codex, `Ctrl+E` to stop, `F5` to refresh, and `Q` to quit.
 
 Maintainers can build the executable locally with:
 
@@ -73,6 +84,19 @@ Close OpenCodeX, download the newest `opencodex.exe` from its release, and
 replace the old file with the downloaded file. Your provider and model settings
 are stored in your user configuration directory, so replacing the executable
 does not remove them.
+
+### Sandbox troubleshooting
+
+If Codex shows a sandbox error after starting the proxy:
+
+1. Confirm you use a real OpenAI-compatible provider URL and a valid API key, then use **Test** and **Fetch models** in the TUI.
+2. Run `opencodex status` and `opencodex models`; the proxy must be running and list models before opening Codex.
+3. Run `opencodex stop`, then `opencodex start` to restore and reapply the Codex configuration.
+4. Check `proxy.log` next to `opencodex.exe`. Do not share API keys if you request support.
+
+## Python and uv options
+
+The following alternatives are for developers and source users. They are not needed for the Windows executable.
 
 ### One-shot install (uvx)
 

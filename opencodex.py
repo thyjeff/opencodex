@@ -514,6 +514,46 @@ def cmd_discover(args: list[str]) -> None:
         print(f"  {ANSI_RED}Error: {e}{ANSI_RESET}")
 
 
+def cmd_install(args: list[str]) -> None:
+    """Add the standalone executable directory to the current user's PATH."""
+    if not FROZEN:
+        trace(f"{ANSI_YELLOW}Use this command from the standalone Windows executable.{ANSI_RESET}")
+        return
+    if sys.platform != "win32":
+        trace(f"{ANSI_RED}Global installation is supported on Windows only.{ANSI_RESET}")
+        return
+
+    import winreg
+
+    install_dir = str(PROXY_DIR.resolve())
+    key = None
+    try:
+        key = winreg.OpenKey(
+            winreg.HKEY_CURRENT_USER, "Environment", 0,
+            winreg.KEY_READ | winreg.KEY_SET_VALUE,
+        )
+        try:
+            current_path, value_type = winreg.QueryValueEx(key, "Path")
+        except FileNotFoundError:
+            current_path, value_type = "", winreg.REG_EXPAND_SZ
+
+        entries = [entry for entry in current_path.split(";") if entry]
+        normalized = os.path.normcase(os.path.normpath(install_dir))
+        if any(os.path.normcase(os.path.normpath(entry)) == normalized for entry in entries):
+            trace(f"{ANSI_GREEN}Already available globally: {install_dir}{ANSI_RESET}")
+            return
+
+        entries.append(install_dir)
+        winreg.SetValueEx(key, "Path", 0, value_type, ";".join(entries))
+        trace(f"{ANSI_GREEN}Added to your PATH: {install_dir}{ANSI_RESET}")
+        trace("Close and reopen PowerShell or Command Prompt, then run: opencodex")
+    except OSError as e:
+        trace(f"{ANSI_RED}Could not update your PATH: {e}{ANSI_RESET}")
+    finally:
+        if key is not None:
+            winreg.CloseKey(key)
+
+
 DEFAULT_CONFIG = {
     "providers": {},
     "mappings": {},
@@ -546,6 +586,7 @@ COMMANDS = {
     "config": cmd_config,
     "models": cmd_models,
     "discover": cmd_discover,
+    "install": cmd_install,
 }
 
 
